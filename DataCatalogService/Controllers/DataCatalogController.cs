@@ -1,80 +1,47 @@
-using AutoMapper;
+using DataCatalogService.Models;
+using DataCatalogService.Repository;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DataCatalogService.Controllers;
-
-public class DataCatalogController
+namespace DataCatalogService.Controllers
 {
-        private readonly IDataCatalogRepo _repository;
-        private readonly IMapper _mapper;
-        private readonly ICommandDataClient _commandDataClient;
-        private readonly IMessageBusClient _messageBusClient;
+    [ApiController]
+    [Route("api/data_catalog")]
+    public class DataCatalogController : ControllerBase
+    {
+        private readonly IDataCatalogRepository _repository;
 
-        public DataCatalogController(
-            IDataCatalogRepo repository, 
-            IMapper mapper,
-            ICommandDataClient commandDataClient,
-            IMessageBusClient messageBusClient)
+        public DataCatalogController(IDataCatalogRepository repository)
         {
             _repository = repository;
-            _mapper = mapper;
-            _commandDataClient = commandDataClient;
-            _messageBusClient = messageBusClient;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<PlatformReadDto>> GetPlatforms()
+        public ActionResult<IEnumerable<DataCatalog>> GetDataCatalog()
         {
             Console.WriteLine("--> Getting Platforms....");
 
-            var platformItem = _repository.GetAllPlatforms();
+            var platformItems = _repository.Get();
 
-            return Ok(_mapper.Map<IEnumerable<PlatformReadDto>>(platformItem));
+            return Ok(platformItems);
         }
 
         [HttpGet("{id}", Name = "GetPlatformById")]
-        public ActionResult<PlatformReadDto> GetPlatformById(int id)
+        public ActionResult<DataCatalog> GetDataCatalogById(string id)
         {
-            var platformItem = _repository.GetPlatformById(id);
-            if (platformItem != null)
+            var platformItem = _repository.GetById(id);
+            if (platformItem is not null)
             {
-                return Ok(_mapper.Map<PlatformReadDto>(platformItem));
+                return Ok(platformItem);
             }
 
             return NotFound();
         }
 
         [HttpPost]
-        public async Task<ActionResult<PlatformReadDto>> CreatePlatform(PlatformCreateDto platformCreateDto)
+        public ActionResult<DataCatalog> CreateDataCatalog(DataCatalog catalog)
         {
-            var platformModel = _mapper.Map<Platform>(platformCreateDto);
-            _repository.CreatePlatform(platformModel);
-            _repository.SaveChanges();
-
-            var platformReadDto = _mapper.Map<PlatformReadDto>(platformModel);
-
-            // Send Sync Message
-            try
-            {
-                await _commandDataClient.SendPlatformToCommand(platformReadDto);
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine($"--> Could not send synchronously: {ex.Message}");
-            }
-
-            //Send Async Message
-            try
-            {
-                var platformPublishedDto = _mapper.Map<PlatformPublishedDto>(platformReadDto);
-                platformPublishedDto.Event = "Platform_Published";
-                _messageBusClient.PublishNewPlatform(platformPublishedDto);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"--> Could not send asynchronously: {ex.Message}");
-            }
-
-            return CreatedAtRoute(nameof(GetPlatformById), new { Id = platformReadDto.Id}, platformReadDto);
+           var result =  _repository.Create(catalog);
+           return CreatedAtAction(nameof(GetDataCatalogById), new { id = result.Id }, result);
         }
+    }
 }

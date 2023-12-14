@@ -1,4 +1,5 @@
 using DataCatalogService.Data;
+using DataCatalogService.Repository;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,8 +11,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseInMemoryDatabase("InMem"));
+// builder.Services.AddDbContext<AppDbContext>(opt =>
+//     opt.UseInMemoryDatabase("InMem"));
+
+
+// Register MongoDB repository
+builder.Services.AddSingleton<IDataCatalogRepository>(sp =>
+{
+    var connectionString = "mongodb+srv://prakashcodes584:LJ6yuRJ4ukv1V1Ye@cluster0.srsgfwg.mongodb.net/?retryWrites=true&w=majority"; // Replace with your MongoDB connection string
+    var databaseName = "microserviceProject"; // Replace with your MongoDB database name
+
+    return new DataCatalogRepo(connectionString, databaseName);
+});
 
 var app = builder.Build();
 

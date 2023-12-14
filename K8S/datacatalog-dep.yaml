@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-catalog-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: datacatalogservice
+  template:
+    metadata:
+      labels:
+        app: datacatalogservice
+    spec:
+      containers:
+      - name: datacatalogservice
+        image: prakashkmr/datacatalogservice:0.1
+        
