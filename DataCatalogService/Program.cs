@@ -1,5 +1,7 @@
+using DataCatalogService.AsyncDataServices;
 using DataCatalogService.Data;
 using DataCatalogService.Repository;
+using DataCatalogService.SyncDataServices.Http;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddHttpClient<ICommandDataClient, CommandDataClient>();
+
+builder.Services.AddSingleton<IMessageBusClient, MessageBusClient>();
+
 
 // builder.Services.AddDbContext<AppDbContext>(opt =>
 //     opt.UseInMemoryDatabase("InMem"));

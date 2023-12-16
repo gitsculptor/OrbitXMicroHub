@@ -22,6 +22,7 @@ public class DataCatalogRepo: IDataCatalogRepository
 
     public DataCatalog Create(DataCatalog item)
     {
+        item.Id = Guid.NewGuid().ToString();
         _todos.InsertOne(item);
         return item;
     }

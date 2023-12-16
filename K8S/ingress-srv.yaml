@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-srv
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: 'true'
+spec:
+  rules:
+    - host: prakashgm.com
+      http:
+        paths:
+          - path: /api/data_catalog
+            pathType: Prefix
+            backend:
+              service:
+                name: datacatalog-cluster-ip-service 
+                port:
+                  number: 80
+          - path: /Commands
+            pathType: Prefix
+            backend:
+              service:
+                name: command-cluster-ip-service
+                port:
+                  number: 80
+
+              

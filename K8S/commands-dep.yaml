@@ -1,33 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: data-catalog-service
+  name: command-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: datacatalogservice
+      app: commandservice
   template:
     metadata:
       labels:
-        app: datacatalogservice
+        app: commandservice
     spec:
       containers:
-      - name: datacatalogservice
-        image: prakashkmr/datacatalogservice:latest  
+      - name: commandservice
+        image: prakashkmr/commandservice:latest  
 
 ---
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: datacatalog-cluster-ip-service
+  name: command-cluster-ip-service
 spec:
   type: ClusterIP
   selector:
-    app: datacatalogservice
+    app: commandservice
   ports:
-  - name: datacatalogservice
+  - name: commandservice
     protocol: TCP
     port: 80
     targetPort: 80
