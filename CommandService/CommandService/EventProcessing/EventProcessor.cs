@@ -36,7 +36,7 @@ public class EventProcessor:IEventProcessor
                 {
                     var command = new Command();
                     command.Id = dataCatalog.Id;
-                    command.Description = GenerateRandomString(10);
+                    command.Description = $"RabbitMQ-Generated{GenerateRandomString(10)}";
                     repo.CreateCommand(command);
                     Console.WriteLine($"Command Saved Succesfully");
                 }

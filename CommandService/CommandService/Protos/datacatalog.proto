@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option csharp_namespace = "DataCatalogService";
+
+
+
+
+service GrpcDataCatalog{
+    rpc GetAllDataCatalog (GetAllRequest) returns (DataCatalogResponse);
+}
+
+message GetAllRequest {}
+
+// Define the DataCatalog message
+message DataCatalogGrpcModel {
+    // Use string for Id, Name, Publisher, and Cost
+    string Id = 1;
+    string Name = 2;
+    string Publisher = 3;
+    string Cost = 4;
+}
+
+message DataCatalogResponse{
+    repeated DataCatalogGrpcModel dataCatalog = 1;
+
+}
+

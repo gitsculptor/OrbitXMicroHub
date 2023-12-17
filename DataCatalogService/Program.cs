@@ -1,6 +1,7 @@
 using DataCatalogService.AsyncDataServices;
 using DataCatalogService.Data;
 using DataCatalogService.Repository;
+using DataCatalogService.SyncDataServices.Grpc;
 using DataCatalogService.SyncDataServices.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +17,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient<ICommandDataClient, CommandDataClient>();
 
 builder.Services.AddSingleton<IMessageBusClient, MessageBusClient>();
+builder.Services.AddGrpc();
 
 
 // builder.Services.AddDbContext<AppDbContext>(opt =>
@@ -25,7 +27,7 @@ builder.Services.AddSingleton<IMessageBusClient, MessageBusClient>();
 // Register MongoDB repository
 builder.Services.AddSingleton<IDataCatalogRepository>(sp =>
 {
-    var connectionString = "mongodb+srv://prakashcodes584:LJ6yuRJ4ukv1V1Ye@cluster0.srsgfwg.mongodb.net/?retryWrites=true&w=majority"; // Replace with your MongoDB connection string
+    var connectionString = "mongo string"; // Replace with your MongoDB connection string
     var databaseName = "microserviceProject"; // Replace with your MongoDB database name
 
     return new DataCatalogRepo(connectionString, databaseName);
@@ -45,5 +47,11 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+ 
+app.MapGrpcService<GrpcDataCatalogService>();
+app.MapGet("/protos/datacatalog.proto", async context =>
+{
+    await context.Response.WriteAsync(System.IO.File.ReadAllText("Protos/datacatalog.proto"));
+});
 
-app.Run();
+app.Run("http://localhost:5206");
