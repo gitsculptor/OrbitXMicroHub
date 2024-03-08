@@ -12,6 +12,6 @@ GRPC
 
 gRPC facilitates communication between the two applications.
 
-Porject architecture- 
-https://docs.google.com/document/d/10h4DIjt7Xg4WO1J_jOvt1amhUu0p9lPPvKWKTzm9WAk/edit
+
+
 
